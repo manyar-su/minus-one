@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wishlist - Minus One</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-2xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Wishlist</h1>
+    <div id="wishlist-list" class="space-y-4"></div>
+    <a href="index.html" class="block mt-8 text-center text-blue-600 hover:underline">Kembali ke Beranda</a>
+  </div>
+  <script>
+    // Ambil wishlist dari localStorage
+    let wishlist = JSON.parse(localStorage.getItem('wishlist_minusone') || '[]');
+    let cart = JSON.parse(localStorage.getItem('cart_minusone') || '[]');
+    const wishlistList = document.getElementById('wishlist-list');
+    // Data produk (nama dan harga, bisa dikembangkan)
+    const productData = {
+      'Gaun Malam Sutra Premium': 'Rp4.500.000',
+      'Blazer Bisnis Tailor': 'Rp3.750.000',
+      'Tas Tangan Kulit Mewah': 'Rp2.250.000',
+      'Sepatu Boots Kulit Italia': 'Rp3.750.000'
+    };
+    function renderWishlist() {
+      wishlist = JSON.parse(localStorage.getItem('wishlist_minusone') || '[]');
+      cart = JSON.parse(localStorage.getItem('cart_minusone') || '[]');
+      if (wishlist.length === 0) {
+        wishlistList.innerHTML = '<p class="text-gray-500 text-center">Wishlist Anda kosong.</p>';
+        return;
+      }
+      wishlistList.innerHTML = wishlist.map(title => `
+        <div class="bg-white rounded-lg shadow p-4 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-lg">${title}</div>
+            <div class="text-red-600 font-semibold mb-2">${productData[title] || '-'}</div>
+          </div>
+          <div class="flex gap-2">
+            <button class="remove-wishlist px-3 py-1 bg-pink-100 text-pink-600 rounded" data-title="${title}">Hapus</button>
+            <button class="add-to-cart px-3 py-1 bg-black text-white rounded" data-title="${title}" data-price="${productData[title] || ''}">Masukan Keranjang</button>
+          </div>
+        </div>
+      `).join('');
+      // Event hapus
+      document.querySelectorAll('.remove-wishlist').forEach(btn => {
+        btn.onclick = function() {
+          const t = this.getAttribute('data-title');
+          wishlist = wishlist.filter(x => x !== t);
+          localStorage.setItem('wishlist_minusone', JSON.stringify(wishlist));
+          renderWishlist();
+        };
+      });
+      // Event masukan keranjang
+      document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.onclick = function() {
+          const title = this.getAttribute('data-title');
+          const price = this.getAttribute('data-price');
+          const idx = cart.findIndex(item => item.title === title && item.price === price);
+          if (idx !== -1) {
+            cart[idx].qty = (cart[idx].qty || 1) + 1;
+          } else {
+            cart.push({ title, price, qty: 1 });
+          }
+          localStorage.setItem('cart_minusone', JSON.stringify(cart));
+          alert('Produk dimasukkan ke keranjang!');
+        };
+      });
+    }
+    renderWishlist();
+  </script>
+</body>
+</html> 

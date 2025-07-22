@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout - Minus One</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .toast-animate { animation: toastIn 0.3s, toastOut 0.3s 1.7s; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
+    @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-2xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Checkout</h1>
+    <!-- Ringkasan Keranjang -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Ringkasan Belanja</h2>
+      <div id="cart-summary">
+        <p class="text-gray-500">Keranjang Anda masih kosong.</p>
+      </div>
+    </div>
+    <!-- Form Data Pelanggan -->
+    <form id="checkout-form" class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Data Pelanggan</h2>
+      <div class="mb-4">
+        <label class="block mb-1 font-medium">Nama Lengkap</label>
+        <input type="text" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <div class="mb-4">
+        <label class="block mb-1 font-medium">Email</label>
+        <input type="email" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <div class="mb-4">
+        <label class="block mb-1 font-medium">No. HP</label>
+        <input type="tel" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <h2 class="text-xl font-semibold mb-4 mt-8">Pilih Metode Pembayaran</h2>
+      <div class="space-y-4">
+        <label class="flex items-center gap-3">
+          <input type="radio" name="payment" value="bank" required />
+          <span>Transfer Bank (BCA, Mandiri, BRI, BNI, dll)</span>
+        </label>
+        <label class="flex items-center gap-3">
+          <input type="radio" name="payment" value="ewallet" />
+          <span>Dompet Digital (DANA, OVO, GoPay, ShopeePay, LinkAja)</span>
+        </label>
+        <label class="flex items-center gap-3">
+          <input type="radio" name="payment" value="crypto" />
+          <span>Pembayaran Crypto (Bitcoin, Ethereum, USDT, dll)</span>
+        </label>
+      </div>
+      <h2 class="text-xl font-semibold mb-4 mt-8">Pilih Pengiriman</h2>
+      <div class="space-y-4 mb-4">
+        <label class="flex items-center gap-3">
+          <input type="radio" name="shipping" value="reguler" checked />
+          <span>Reguler (2-4 hari)</span>
+        </label>
+        <label class="flex items-center gap-3">
+          <input type="radio" name="shipping" value="ekspres" />
+          <span>Ekspres (1-2 hari)</span>
+        </label>
+        <label class="flex items-center gap-3">
+          <input type="radio" name="shipping" value="sameday" />
+          <span>Same Day (6 jam)</span>
+        </label>
+      </div>
+      <h2 class="text-xl font-semibold mb-4 mt-8">Pilih Kurir/Ekspedisi</h2>
+      <div class="space-y-4 mb-4">
+        <label class="flex items-center gap-3"><input type="radio" name="courier" value="jne" checked />JNE</label>
+        <label class="flex items-center gap-3"><input type="radio" name="courier" value="sicepat" />SiCepat</label>
+        <label class="flex items-center gap-3"><input type="radio" name="courier" value="jnt" />J&T</label>
+        <label class="flex items-center gap-3"><input type="radio" name="courier" value="anteraja" />AnterAja</label>
+      </div>
+      <div id="ongkir-info" class="mb-4 text-sm text-gray-600">Estimasi ongkir: <span id="ongkir-value">Rp15.000</span></div>
+      <div id="total-bayar-info" class="mb-4 text-lg font-bold text-right text-red-600"></div>
+      <button type="submit" class="mt-8 w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition">Konfirmasi & Bayar</button>
+    </form>
+    <div id="success-message" class="hidden bg-green-100 text-green-800 p-4 rounded-lg text-center font-semibold"></div>
+  </div>
+  <!-- Toast notification -->
+  <div id="cart-success-notif" class="hidden fixed top-6 right-6 bg-green-500 text-white px-4 py-2 rounded shadow-2xl z-50 flex items-center gap-2 text-base font-semibold" style="min-width:200px;">
+    <span class="text-2xl">✔️</span>
+    <span id="cart-success-msg"></span>
+  </div>
+  <script>
+    // Simulasi ambil data keranjang dari localStorage (atau bisa diintegrasikan dengan backend)
+    const cartSummary = document.getElementById('cart-summary');
+    let cart = JSON.parse(localStorage.getItem('cart_minusone') || '[]');
+    if (cart.length === 0) {
+      cartSummary.innerHTML = '<p class="text-gray-500">Keranjang Anda masih kosong.</p>';
+    } else {
+      const productStock = {
+        'Gaun Malam Sutra Premium': 5,
+        'Blazer Bisnis Tailor': 3,
+        'Tas Tangan Kulit Mewah': 7,
+        'Sepatu Boots Kulit Italia': 4
+      };
+      cartSummary.innerHTML = cart.map((item, idx) => {
+        const stok = productStock[item.title] || 99;
+        const qty = item.qty || 1;
+        const overStock = qty > stok;
+        return `
+          <div class='flex justify-between items-center mb-2'>
+            <span>${item.title}</span>
+            <div class='flex items-center gap-2'>
+              <input type='number' min='1' max='${stok}' value='${qty}' data-idx='${idx}' class='cart-qty-input w-12 border rounded text-center' />
+              <span class='font-bold text-red-600 ml-2'>${item.price}</span>
+              <button class='cart-remove-btn text-xl text-gray-400 hover:text-red-600' data-idx='${idx}' title='Hapus'>&#128465;</button>
+            </div>
+          </div>
+          ${overStock ? `<div class='text-xs text-red-600 mb-2 ml-2'>Stok hanya ${stok} item!</div>` : ''}
+        `;
+      }).join('') + `<div class='border-t pt-2 mt-2 flex justify-between font-bold'><span>Total</span><span id='checkout-total'></span></div>`;
+      cartSummary.innerHTML += `<div class='flex justify-between items-center mt-2'><span></span><button id='cart-clear-btn' class='text-sm text-red-600 hover:underline'>Hapus Semua</button></div>`;
+      updateTotal();
+      // Event hapus item
+      document.querySelectorAll('.cart-remove-btn').forEach(btn => {
+        btn.onclick = function() {
+          const idx = parseInt(this.getAttribute('data-idx'));
+          cart.splice(idx, 1);
+          localStorage.setItem('cart_minusone', JSON.stringify(cart));
+          renderCart();
+          showSuccessNotif('Item dihapus dari keranjang!');
+        };
+      });
+      // Event ubah qty
+      document.querySelectorAll('.cart-qty-input').forEach(input => {
+        input.onchange = function() {
+          const idx = parseInt(this.getAttribute('data-idx'));
+          let val = parseInt(this.value);
+          const stok = productStock[cart[idx].title] || 99;
+          if (val > stok) val = stok;
+          if (isNaN(val) || val < 1) val = 1;
+          cart[idx].qty = val;
+          localStorage.setItem('cart_minusone', JSON.stringify(cart));
+          renderCart();
+          showSuccessNotif('Jumlah item berhasil diubah!');
+        };
+      });
+      // Event hapus semua
+      const clearBtn = document.getElementById('cart-clear-btn');
+      if (clearBtn) {
+        clearBtn.onclick = function() {
+          cart = [];
+          localStorage.setItem('cart_minusone', JSON.stringify(cart));
+          renderCart();
+          showSuccessNotif('Keranjang dikosongkan!');
+        };
+      }
+      function updateTotal() {
+        const total = cart.reduce((sum, item) => sum + (parseInt((item.price||'0').replace(/\D/g, '')) * (item.qty || 1)), 0);
+        document.getElementById('checkout-total').textContent = total.toLocaleString('id-ID', {style:'currency', currency:'IDR'});
+      }
+    }
+    function renderCart() { cart = JSON.parse(localStorage.getItem('cart_minusone') || '[]'); if (cart.length === 0) { cartSummary.innerHTML = '<p class="text-gray-500">Keranjang Anda masih kosong.</p>'; } else { /* diisi ulang di atas */ } }
+    renderCart();
+    // Estimasi total pembayaran (produk + ongkir)
+    function updateTotalBayar() {
+      const totalProduk = cart.reduce((sum, item) => sum + (parseInt((item.price||'0').replace(/\D/g, '')) * (item.qty || 1)), 0);
+      const ongkir = getOngkir();
+      document.getElementById('total-bayar-info').textContent = 'Total Bayar: ' + (totalProduk + ongkir).toLocaleString('id-ID', {style:'currency', currency:'IDR'});
+    }
+    function getOngkir() {
+      const shipping = document.querySelector('input[name="shipping"]:checked')?.value;
+      const courier = document.querySelector('input[name="courier"]:checked')?.value;
+      // Kombinasi ongkir (bisa dikembangkan)
+      if (shipping === 'reguler') {
+        if (courier === 'jne') return 15000;
+        if (courier === 'sicepat') return 17000;
+        if (courier === 'jnt') return 16000;
+        if (courier === 'anteraja') return 15500;
+      }
+      if (shipping === 'ekspres') {
+        if (courier === 'jne') return 25000;
+        if (courier === 'sicepat') return 27000;
+        if (courier === 'jnt') return 26000;
+        if (courier === 'anteraja') return 25500;
+      }
+      if (shipping === 'sameday') {
+        if (courier === 'jne') return 40000;
+        if (courier === 'sicepat') return 42000;
+        if (courier === 'jnt') return 41000;
+        if (courier === 'anteraja') return 40500;
+      }
+      return 15000;
+    }
+    // Update estimasi ongkir dan total bayar saat pilihan berubah
+    function updateOngkirTotal() {
+      const ongkir = getOngkir();
+      document.getElementById('ongkir-value').textContent = ongkir.toLocaleString('id-ID', {style:'currency', currency:'IDR'});
+      updateTotalBayar();
+    }
+    document.querySelectorAll('input[name="shipping"],input[name="courier"]').forEach(radio => {
+      radio.onchange = updateOngkirTotal;
+    });
+    updateOngkirTotal();
+    // Suara notifikasi (ding)
+    const notifAudio = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa1c82.mp3');
+    // Simulasi submit form
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Validasi email dan no HP
+      const email = this.querySelector('input[type="email"]');
+      const phone = this.querySelector('input[type="tel"]');
+      let valid = true;
+      // Email regex sederhana
+      if (!/^\S+@\S+\.\S+$/.test(email.value)) {
+        email.classList.add('border-red-500');
+        showSuccessNotif('Email tidak valid!');
+        valid = false;
+      } else {
+        email.classList.remove('border-red-500');
+      }
+      // No HP minimal 9 digit angka
+      if (!/^\d{9,}$/.test(phone.value)) {
+        phone.classList.add('border-red-500');
+        showSuccessNotif('No HP tidak valid!');
+        valid = false;
+      } else {
+        phone.classList.remove('border-red-500');
+      }
+      if (!valid) return;
+      // Spinner loading pada tombol
+      const btn = this.querySelector('button[type="submit"]');
+      const oldHtml = btn.innerHTML;
+      btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>Memproses...';
+      btn.disabled = true;
+      setTimeout(() => {
+        document.getElementById('success-message').textContent = 'Terima kasih! Pesanan Anda sedang diproses.';
+        document.getElementById('success-message').classList.remove('hidden');
+        this.classList.add('hidden');
+        btn.innerHTML = oldHtml;
+        btn.disabled = false;
+        // Simpan data pelanggan ke localStorage
+        const nama = this.querySelector('input[type="text"]').value;
+        const payment = this.querySelector('input[name="payment"]:checked')?.value;
+        const shipping = this.querySelector('input[name="shipping"]:checked')?.value;
+        const courier = this.querySelector('input[name="courier"]:checked')?.value;
+        const totalBayar = document.getElementById('total-bayar-info').textContent;
+        // Simpan riwayat pesanan
+        let orders = JSON.parse(localStorage.getItem('orders_minusone') || '[]');
+        orders.push({ nama, email: email.value, phone: phone.value, payment, shipping, courier, totalBayar, waktu: new Date().toISOString() });
+        localStorage.setItem('orders_minusone', JSON.stringify(orders));
+      }, 1800);
+    });
+    // Notifikasi sukses
+    function showSuccessNotif(msg) {
+      const notif = document.getElementById('cart-success-notif');
+      const notifMsg = document.getElementById('cart-success-msg');
+      notifMsg.textContent = msg;
+      notif.classList.remove('hidden');
+      notif.classList.add('toast-animate');
+      notifAudio.currentTime = 0; notifAudio.play();
+      setTimeout(() => {
+        notif.classList.add('hidden');
+        notif.classList.remove('toast-animate');
+      }, 2000);
+    }
+  </script>
+</body>
+</html> 

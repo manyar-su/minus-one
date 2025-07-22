@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Riwayat Pesanan - Minus One</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-3xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Riwayat Pesanan</h1>
+    <div id="order-list" class="space-y-4"></div>
+    <a href="index.html" class="block mt-8 text-center text-blue-600 hover:underline">Kembali ke Beranda</a>
+  </div>
+  <script>
+    // Ambil riwayat pesanan dari localStorage
+    let orders = JSON.parse(localStorage.getItem('orders_minusone') || '[]');
+    const orderList = document.getElementById('order-list');
+    function renderOrders() {
+      orders = JSON.parse(localStorage.getItem('orders_minusone') || '[]');
+      if (!orders.length) {
+        orderList.innerHTML = '<p class="text-gray-500 text-center">Belum ada pesanan.</p>';
+        return;
+      }
+      orderList.innerHTML = orders.reverse().map(order => `
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="flex justify-between items-center mb-2">
+            <div class="font-bold text-lg">${order.nama}</div>
+            <div class="text-xs text-gray-400">${new Date(order.waktu).toLocaleString('id-ID')}</div>
+          </div>
+          <div class="mb-1"><span class="font-semibold">Email:</span> ${order.email}</div>
+          <div class="mb-1"><span class="font-semibold">No HP:</span> ${order.phone}</div>
+          <div class="mb-1"><span class="font-semibold">Pengiriman:</span> ${order.shipping} (${order.courier})</div>
+          <div class="mb-1"><span class="font-semibold">Metode Bayar:</span> ${order.payment}</div>
+          <div class="mb-1"><span class="font-semibold">Total Bayar:</span> ${order.totalBayar}</div>
+          <div class="mb-1"><span class="font-semibold">Status:</span> <span class="text-green-600 font-bold">Diproses</span></div>
+        </div>
+      `).join('');
+    }
+    renderOrders();
+  </script>
+</body>
+</html> 

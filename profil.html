@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil User - Minus One</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-2xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Profil Saya</h1>
+    <div class="flex flex-col items-center mb-6">
+      <img id="foto-profil" src="" alt="Foto Profil" class="w-24 h-24 rounded-full object-cover border-2 border-gray-300 mb-2" />
+      <input type="file" id="upload-foto" accept="image/*" class="mb-2" />
+    </div>
+    <form id="profil-form" class="bg-white rounded-lg shadow p-6 mb-8 space-y-4">
+      <div>
+        <label class="block mb-1 font-medium">Nama Lengkap</label>
+        <input type="text" id="nama" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block mb-1 font-medium">Email</label>
+        <input type="email" id="email" class="w-full border rounded px-3 py-2 bg-gray-100" readonly />
+      </div>
+      <div>
+        <label class="block mb-1 font-medium">No HP</label>
+        <input type="tel" id="phone" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block mb-1 font-medium">Daftar Alamat</label>
+        <div id="alamat-list" class="space-y-2 mb-2"></div>
+        <button type="button" id="tambah-alamat" class="bg-gray-200 hover:bg-gray-300 text-gray-900 px-3 py-1 rounded text-sm">Tambah Alamat</button>
+      </div>
+      <div>
+        <label class="block mb-1 font-medium">Akun Bank</label>
+        <input type="text" id="bank" class="w-full border rounded px-3 py-2" placeholder="Contoh: BCA 1234567890 a.n. Nama Anda" />
+      </div>
+      <button type="submit" class="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition">Simpan Perubahan</button>
+      <div id="profil-msg" class="mt-2 text-center text-sm"></div>
+    </form>
+    <h2 class="text-2xl font-bold mb-4 mt-10">Riwayat Pesanan</h2>
+    <div id="order-list" class="space-y-4"></div>
+    <a href="index.html" class="block mt-8 text-center text-blue-600 hover:underline">Kembali ke Beranda</a>
+  </div>
+  <script>
+    // Cek login
+    const user = JSON.parse(localStorage.getItem('user_minusone') || 'null');
+    if (!user) {
+      window.location.href = 'login.html';
+    }
+    // Ambil data user dari "database"
+    let users = JSON.parse(localStorage.getItem('users_minusone') || '[]');
+    let u = users.find(u => u.email === user.email);
+    if (!u) {
+      alert('User tidak ditemukan!');
+      window.location.href = 'login.html';
+    }
+    // Foto profil
+    const fotoProfil = document.getElementById('foto-profil');
+    fotoProfil.src = u.foto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.nama || 'User');
+    document.getElementById('upload-foto').onchange = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        fotoProfil.src = evt.target.result;
+        u.foto = evt.target.result;
+        users = users.map(x => x.email === u.email ? u : x);
+        localStorage.setItem('users_minusone', JSON.stringify(users));
+      };
+      reader.readAsDataURL(file);
+    };
+    // Isi form profil
+    document.getElementById('nama').value = u.nama || '';
+    document.getElementById('email').value = u.email || '';
+    document.getElementById('phone').value = u.phone || '';
+    // Multi alamat
+    if (!u.alamatList) u.alamatList = [{ alamat: u.alamat || '', utama: true }];
+    function renderAlamatList() {
+      const list = document.getElementById('alamat-list');
+      list.innerHTML = u.alamatList.map((a, i) => `
+        <div class="flex items-start gap-2">
+          <input type="radio" name="alamat-utama" ${a.utama ? 'checked' : ''} data-idx="${i}" title="Jadikan utama" />
+          <textarea class="w-full border rounded px-3 py-2" data-idx="${i}">${a.alamat}</textarea>
+          <button type="button" class="hapus-alamat text-red-600 text-lg" data-idx="${i}" title="Hapus">&times;</button>
+        </div>
+      `).join('');
+      // Event radio utama
+      list.querySelectorAll('input[type=radio]').forEach(radio => {
+        radio.onchange = function() {
+          u.alamatList.forEach((a, j) => a.utama = (j == this.dataset.idx));
+          renderAlamatList();
+        };
+      });
+      // Event edit textarea
+      list.querySelectorAll('textarea').forEach(textarea => {
+        textarea.oninput = function() {
+          u.alamatList[this.dataset.idx].alamat = this.value;
+        };
+      });
+      // Event hapus
+      list.querySelectorAll('.hapus-alamat').forEach(btn => {
+        btn.onclick = function() {
+          u.alamatList.splice(this.dataset.idx, 1);
+          if (!u.alamatList.some(a => a.utama) && u.alamatList.length) u.alamatList[0].utama = true;
+          renderAlamatList();
+        };
+      });
+    }
+    renderAlamatList();
+    document.getElementById('tambah-alamat').onclick = function() {
+      u.alamatList.push({ alamat: '', utama: false });
+      renderAlamatList();
+    };
+    document.getElementById('bank').value = u.bank || '';
+    // Simpan perubahan profil
+    document.getElementById('profil-form').onsubmit = function(e) {
+      e.preventDefault();
+      u.nama = document.getElementById('nama').value.trim();
+      u.phone = document.getElementById('phone').value.trim();
+      // Simpan alamat utama ke u.alamat (untuk autofill checkout)
+      u.alamat = (u.alamatList.find(a => a.utama) || { alamat: '' }).alamat.trim();
+      u.bank = document.getElementById('bank').value.trim();
+      users = users.map(x => x.email === u.email ? u : x);
+      localStorage.setItem('users_minusone', JSON.stringify(users));
+      document.getElementById('profil-msg').textContent = 'Profil berhasil disimpan!';
+      document.getElementById('profil-msg').className = 'mt-2 text-center text-sm text-green-600';
+    };
+    // Tampilkan riwayat pesanan user
+    function renderOrders() {
+      let orders = JSON.parse(localStorage.getItem('orders_minusone') || '[]');
+      orders = orders.filter(o => o.email === u.email);
+      const orderList = document.getElementById('order-list');
+      if (!orders.length) {
+        orderList.innerHTML = '<p class="text-gray-500 text-center">Belum ada pesanan.</p>';
+        return;
+      }
+      orderList.innerHTML = orders.reverse().map(order => `
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="flex justify-between items-center mb-2">
+            <div class="font-bold text-lg">${order.nama}</div>
+            <div class="text-xs text-gray-400">${new Date(order.waktu).toLocaleString('id-ID')}</div>
+          </div>
+          <div class="mb-1"><span class="font-semibold">Alamat:</span> ${u.alamat || '-'}</div>
+          <div class="mb-1"><span class="font-semibold">No HP:</span> ${u.phone || '-'}</div>
+          <div class="mb-1"><span class="font-semibold">Pengiriman:</span> ${order.shipping} (${order.courier})</div>
+          <div class="mb-1"><span class="font-semibold">Metode Bayar:</span> ${order.payment}</div>
+          <div class="mb-1"><span class="font-semibold">Total Bayar:</span> ${order.totalBayar}</div>
+          <div class="mb-1"><span class="font-semibold">Status:</span> <span class="text-green-600 font-bold">Diproses</span></div>
+        </div>
+      `).join('');
+    }
+    renderOrders();
+  </script>
+</body>
+</html> 

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minus one "is the only one"</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Animasi custom untuk tombol masukan keranjang */
+    .cart-animate {
+      animation: cartPop 0.4s;
+    }
+    @keyframes cartPop {
+      0% { transform: scale(1); background-color: #111827; }
+      50% { transform: scale(1.12); background-color: #22c55e; }
+      100% { transform: scale(1); background-color: #111827; }
+    }
+    /* Toast animasi fade-in/out */
+    .toast-animate {
+      animation: toastIn 0.3s, toastOut 0.3s 1.7s;
+    }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
+    @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+    /* Sticky badge */
+    .cart-sticky-badge { position: sticky; top: 12px; z-index: 40; }
+    /* Tombol qty elegan */
+    .qty-btn {
+      @apply w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-black font-bold text-lg transition-all duration-150 shadow hover:bg-black hover:text-white hover:scale-110 active:scale-95;
+      outline: none;
+    }
+    /* Sembunyikan scrollbar carousel */
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .scale-110 { transform: scale(1.1); }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,0,0,0.3); }
+      70% { box-shadow: 0 0 0 10px rgba(255,0,0,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,0,0,0); }
+    }
+    .badge-diskon { transition: transform 0.2s; }
+    .badge-diskon:hover { transform: scale(1.15) rotate(-8deg); }
+  </style>
+  </head>
+<body class="bg-white">
+  <!-- Header -->
+  <header class="bg-gray-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+          <img src="public/a-sophisticated-logo-design-featuring-th_kpMChFs1S2CtxX0sVL8VYg_APUBUESlSXebZ_YC6Evugw-removebg-preview.png" alt="Logo" class="w-full h-full object-contain" />
+        </div>
+        <span class="ml-3 text-xl font-bold">Minus One</span>
+      </div>
+      <nav class="space-x-6 hidden md:block relative">
+        <div class="inline-block group relative">
+          <a href="#" class="hover:text-red-400">Koleksi Baru</a>
+        </div>
+        <div class="inline-block group relative">
+          <a href="#" class="hover:text-red-400">Wanita</a>
+          <!-- Dropdown Wanita dengan gambar produk asli -->
+          <div class="absolute left-0 top-full mt-1 min-w-[200px] bg-white shadow-lg rounded-lg pt-3 pb-2 opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto hover:opacity-100 hover:pointer-events-auto pointer-events-none transition-opacity duration-200 delay-300 z-20">
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="photo/kemeja/5235288.jpg" alt="Kemeja" class="w-10 h-10 object-cover rounded" /> Kemeja
+            </a>
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="photo/jaket/4964140.jpg" alt="Jaket" class="w-10 h-10 object-cover rounded" /> Jaket
+            </a>
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="https://via.placeholder.com/40x40?text=Celana" alt="Celana" class="w-10 h-10 object-cover rounded" /> Celana
+            </a>
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="https://via.placeholder.com/40x40?text=Sepatu" alt="Sepatu" class="w-10 h-10 object-cover rounded" /> Sepatu
+            </a>
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="https://via.placeholder.com/40x40?text=Aksesoris" alt="Aksesoris" class="w-10 h-10 object-cover rounded" /> Aksesoris
+            </a>
+          </div>
+        </div>
+        <div class="inline-block group relative">
+          <a href="#" class="hover:text-red-400">Pria</a>
+          <!-- Dropdown Pria dengan gambar produk asli -->
+          <div class="absolute left-0 top-full mt-1 min-w-[200px] bg-white shadow-lg rounded-lg pt-3 pb-2 opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto hover:opacity-100 hover:pointer-events-auto pointer-events-none transition-opacity duration-200 delay-300 z-20">
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="photo/kemeja/5235288.jpg" alt="Kemeja" class="w-10 h-10 object-cover rounded" /> Kemeja
+            </a>
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="photo/jaket/4964140.jpg" alt="Jaket" class="w-10 h-10 object-cover rounded" /> Jaket
+            </a>
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="https://via.placeholder.com/40x40?text=Celana" alt="Celana" class="w-10 h-10 object-cover rounded" /> Celana
+            </a>
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="https://via.placeholder.com/40x40?text=Sepatu" alt="Sepatu" class="w-10 h-10 object-cover rounded" /> Sepatu
+            </a>
+            <a href="#" class="flex items-center gap-2 px-6 py-3 text-gray-700 hover:bg-gray-100 cursor-pointer rounded">
+              <img src="https://via.placeholder.com/40x40?text=Aksesoris" alt="Aksesoris" class="w-10 h-10 object-cover rounded" /> Aksesoris
+            </a>
+          </div>
+        </div>
+        <div class="inline-block group relative">
+          <a href="#" class="hover:text-red-400">Aksesoris</a>
+        </div>
+        <div class="inline-block group relative">
+          <a href="#" class="hover:text-red-400">Promo</a>
+        </div>
+      </nav>
+      <div class="space-x-4 flex items-center" id="auth-menu">
+        <button id="cart-btn" class="relative bg-white text-gray-900 px-3 py-2 rounded-lg flex items-center mr-2">
+          <span class="text-xl mr-1">🛒</span>
+          <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-1 cart-sticky-badge">0</span>
+        </button>
+        <a href="daftar.html" class="bg-gray-200 hover:bg-gray-300 text-gray-900 px-4 py-2 rounded-lg font-semibold">Daftar</a>
+        <a href="login.html" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold text-white">Login</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative bg-gray-50 overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+      <div class="lg:grid lg:grid-cols-12 lg:gap-8 min-h-[80vh]">
+        <!-- Content -->
+        <div class="lg:col-span-5 flex items-center px-4 sm:px-6 lg:px-8 py-20">
+          <div>
+            <div class="flex items-center mb-6">
+              <div class="flex items-center bg-black text-white px-3 py-1 rounded-full text-sm font-medium">
+                <span class="mr-2">★</span>
+                Koleksi Terbaru 2025
+              </div>
+            </div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              Tingkatkan
+              <span class="block text-gray-600"> Gaya Anda</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 leading-relaxed max-w-lg">
+              Temukan koleksi fashion premium kami yang memadukan desain kontemporer dengan sentuhan elegan yang abadi.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 mb-8">
+              <button class="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center group">
+                Shop Collection
+                <span class="ml-2">→</span>
+              </button>
+              <button class="border-2 border-gray-300 hover:border-black text-gray-700 hover:text-black px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200">
+                View Lookbook
+              </button>
+            </div>
+            <div class="flex flex-wrap items-center gap-8 text-sm text-gray-500">
+              <div class="flex items-center">
+                <span class="font-semibold text-gray-900">Gratis</span>
+                <span class="ml-1">Ongkir</span>
+              </div>
+              <div class="flex items-center">
+                <span class="font-semibold text-gray-900">30 Hari</span>
+                <span class="ml-1">Pengembalian</span>
+              </div>
+              <div class="flex items-center">
+                <span class="font-semibold text-gray-900">24/7</span>
+                <span class="ml-1">Layanan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Hero Image -->
+        <div class="lg:col-span-7 relative">
+          <div class="h-full min-h-[500px] lg:min-h-[80vh]">
+            <img
+              class="w-full h-full object-cover"
+              src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              alt="Model fashion mengenakan busana elegan"
+            />
+            <div class="absolute inset-0 bg-gradient-to-r from-gray-50/80 via-transparent to-transparent lg:from-gray-50/60"></div>
+            <div class="absolute bottom-8 right-8 bg-white p-4 rounded-xl shadow-xl">
+              <div class="text-sm text-gray-500">Mulai dari</div>
+              <div class="text-2xl font-bold text-gray-900">Rp4.500.000</div>
+              <div class="text-sm text-gray-500">Koleksi Premium</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Belanja Berdasarkan Kategori
+        </h2>
+        <p class="text-xl text-gray-600">
+          Jelajahi beragam kategori fashion kami
+        </p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Category Card Example -->
+        <div class="group cursor-pointer">
+          <div class="relative aspect-[4/5] rounded-2xl overflow-hidden mb-4">
+            <img src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fashion Wanita" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            <div class="absolute bottom-6 left-6 text-white">
+              <h3 class="text-xl font-bold mb-1">Fashion Wanita</h3>
+              <p class="text-sm opacity-90">120+ Produk</p>
+            </div>
+          </div>
+        </div>
+        <div class="group cursor-pointer">
+          <div class="relative aspect-[4/5] rounded-2xl overflow-hidden mb-4">
+            <img src="https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fashion Pria" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            <div class="absolute bottom-6 left-6 text-white">
+              <h3 class="text-xl font-bold mb-1">Fashion Pria</h3>
+              <p class="text-sm opacity-90">85+ Produk</p>
+            </div>
+          </div>
+        </div>
+        <div class="group cursor-pointer">
+          <div class="relative aspect-[4/5] rounded-2xl overflow-hidden mb-4">
+            <img src="https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Aksesoris" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            <div class="absolute bottom-6 left-6 text-white">
+              <h3 class="text-xl font-bold mb-1">Aksesoris</h3>
+              <p class="text-sm opacity-90">200+ Produk</p>
+            </div>
+          </div>
+        </div>
+        <div class="group cursor-pointer">
+          <div class="relative aspect-[4/5] rounded-2xl overflow-hidden mb-4">
+            <img src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Sepatu" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            <div class="absolute bottom-6 left-6 text-white">
+              <h3 class="text-xl font-bold mb-1">Sepatu</h3>
+              <p class="text-sm opacity-90">75+ Produk</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- New Arrival Gallery Carousel (Continuous Auto Slide) -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          New Arrival Gallery
+        </h2>
+        <p class="text-xl text-gray-600">
+          Koleksi terbaru kemeja dan jaket
+        </p>
+      </div>
+      <div class="relative">
+        <!-- Tombol panah -->
+        <button id="na-prev" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white border shadow rounded-full w-10 h-10 flex items-center justify-center text-2xl hover:bg-gray-100">&#8592;</button>
+        <button id="na-next" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white border shadow rounded-full w-10 h-10 flex items-center justify-center text-2xl hover:bg-gray-100">&#8594;</button>
+        <!-- Carousel Continuous Infinite -->
+        <div id="na-carousel" class="flex gap-8 overflow-x-auto scroll-smooth py-4 px-12 hide-scrollbar">
+          <!-- Gambar kemeja dan jaket (asli) -->
+          <img src="photo/kemeja/5235288.jpg" alt="Kemeja 1" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/kemeja/5235288 (1).jpg" alt="Kemeja 2" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/kemeja/5235289.jpg" alt="Kemeja 3" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/kemeja/5235290.jpg" alt="Kemeja 4" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/jaket/4964140.jpg" alt="Jaket 1" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/jaket/4964141.jpg" alt="Jaket 2" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/jaket/4964142.jpg" alt="Jaket 3" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <!-- Duplikasi gambar untuk infinite loop -->
+          <img src="photo/kemeja/5235288.jpg" alt="Kemeja 1" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/kemeja/5235288 (1).jpg" alt="Kemeja 2" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/kemeja/5235289.jpg" alt="Kemeja 3" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/kemeja/5235290.jpg" alt="Kemeja 4" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/jaket/4964140.jpg" alt="Jaket 1" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/jaket/4964141.jpg" alt="Jaket 2" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+          <img src="photo/jaket/4964142.jpg" alt="Jaket 3" class="rounded-2xl shadow-lg w-60 h-60 object-cover transition-transform duration-300" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Grid Section (contoh statis, bisa dikembangkan dengan JS) -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Produk Unggulan
+        </h2>
+        <p class="text-xl text-gray-600">
+          Pilihan produk terbaik untuk Anda
+        </p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Product Card Example -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col produk-gaun">
+          <img src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Gaun Malam Sutra Premium" class="rounded-xl mb-4 h-60 object-cover" />
+          <h3 class="font-bold text-lg mb-2">Gaun Malam Sutra Premium</h3>
+          <div class="flex items-center mb-1 gap-1 rating" data-title="Gaun Malam Sutra Premium"></div>
+          <div class="flex items-center mb-2">
+            <span class="harga-diskon text-red-600 font-bold text-xl mr-2">Rp150.000</span>
+            <span class="harga-lama line-through text-gray-400 ml-2">Rp375.000</span>
+          </div>
+          <span class="text-gray-500 text-sm mb-4">Gaun</span>
+          <div class="stok-info text-xs text-gray-500 mt-1">Stok: 5</div>
+          <div class="flex items-center gap-2 mt-auto">
+            <button class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 flex-1 add-to-cart-btn" data-title="Gaun Malam Sutra Premium" data-price="Rp4.500.000">Masukan Keranjang</button>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col produk-blazer">
+          <img src="https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Blazer Bisnis Tailor" class="rounded-xl mb-4 h-60 object-cover" />
+          <h3 class="font-bold text-lg mb-2">Blazer Bisnis Tailor</h3>
+          <div class="flex items-center mb-1 gap-1 rating" data-title="Blazer Bisnis Tailor"></div>
+          <div class="flex items-center mb-2">
+            <span class="harga-diskon text-red-600 font-bold text-xl mr-2">Rp180.000</span>
+            <span class="harga-lama line-through text-gray-400 ml-2">Rp450.000</span>
+          </div>
+          <span class="text-gray-500 text-sm mb-4">Jaket & Mantel</span>
+          <div class="stok-info text-xs text-gray-500 mt-1">Stok: 3</div>
+          <div class="flex items-center gap-2 mt-auto">
+            <button class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 flex-1 add-to-cart-btn" data-title="Blazer Bisnis Tailor" data-price="Rp3.750.000">Masukan Keranjang</button>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col produk-tas">
+          <img src="https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Tas Tangan Kulit Mewah" class="rounded-xl mb-4 h-60 object-cover" />
+          <h3 class="font-bold text-lg mb-2">Tas Tangan Kulit Mewah</h3>
+          <div class="flex items-center mb-1 gap-1 rating" data-title="Tas Tangan Kulit Mewah"></div>
+          <div class="flex items-center mb-2">
+            <span class="harga-diskon text-red-600 font-bold text-xl mr-2">Rp120.000</span>
+            <span class="harga-lama line-through text-gray-400 ml-2">Rp400.000</span>
+          </div>
+          <span class="text-gray-500 text-sm mb-4">Tas</span>
+          <div class="stok-info text-xs text-gray-500 mt-1">Stok: 7</div>
+          <div class="flex items-center gap-2 mt-auto">
+            <button class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 flex-1 add-to-cart-btn" data-title="Tas Tangan Kulit Mewah" data-price="Rp2.250.000">Masukan Keranjang</button>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col produk-sepatu">
+          <img src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Sepatu Boots Kulit Italia" class="rounded-xl mb-4 h-60 object-cover" />
+          <h3 class="font-bold text-lg mb-2">Sepatu Boots Kulit Italia</h3>
+          <div class="flex items-center mb-1 gap-1 rating" data-title="Sepatu Boots Kulit Italia"></div>
+          <div class="flex items-center mb-2">
+            <span class="harga-diskon text-red-600 font-bold text-xl mr-2">Rp300.000</span>
+            <span class="harga-lama line-through text-gray-400 ml-2">Rp1.000.000</span>
+          </div>
+          <span class="text-gray-500 text-sm mb-4">Sepatu</span>
+          <div class="stok-info text-xs text-gray-500 mt-1">Stok: 4</div>
+          <div class="flex items-center gap-2 mt-auto">
+            <button class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 flex-1 add-to-cart-btn" data-title="Sepatu Boots Kulit Italia" data-price="Rp3.750.000">Masukan Keranjang</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="py-20 bg-black text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="flex justify-center mb-6">
+          <div class="bg-white/10 p-4 rounded-full">
+            <span class="text-2xl">🎁</span>
+          </div>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">
+          Dapatkan Diskon 15% untuk Pesanan Pertama Anda
+        </h2>
+        <p class="text-xl text-gray-300 mb-8">
+          Daftar ke newsletter kami dan jadi yang pertama tahu tentang koleksi terbaru, penawaran eksklusif, dan tips fashion.
+        </p>
+        <div class="max-w-md mx-auto">
+          <div class="flex gap-4">
+            <div class="flex-1 relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">✉️</span>
+              <input
+                type="email"
+                placeholder="Masukkan email Anda"
+                class="w-full pl-12 pr-4 py-4 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+              />
+            </div>
+            <button class="bg-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              Subscribe
+            </button>
+          </div>
+          <p class="text-sm text-gray-400 mt-4">
+            Tidak ada spam, berhenti berlangganan kapan saja
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Company Info -->
+        <div class="lg:col-span-1">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+              <img src="public/a-sophisticated-logo-design-featuring-th_kpMChFs1S2CtxX0sVL8VYg_APUBUESlSXebZ_YC6Evugw-removebg-preview.png" alt="Logo" class="w-full h-full object-contain" />
+            </div>
+            <span class="ml-3 text-xl font-bold">minus one</span>
+          </div>
+          <p class="text-gray-400 mb-6 leading-relaxed">
+            Destinasi fashion premium yang menawarkan koleksi kontemporer dan abadi untuk gaya hidup modern.
+          </p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">Instagram</a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">Twitter</a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">Facebook</a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">Email</a>
+          </div>
+        </div>
+        <!-- Shop -->
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Belanja</h3>
+          <ul class="space-y-4">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Koleksi Baru</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Wanita</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Pria</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Aksesoris</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Sepatu</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Promo</a></li>
+          </ul>
+        </div>
+        <!-- Customer Care -->
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Layanan Pelanggan</h3>
+          <ul class="space-y-4">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Panduan Ukuran</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Info Pengiriman</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Pengembalian & Penukaran</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Instruksi Perawatan</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Hubungi Kami</a></li>
+          </ul>
+        </div>
+        <!-- Company -->
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Perusahaan</h3>
+          <ul class="space-y-4">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Tentang Kami</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Karir</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Press</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Keberlanjutan</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Kebijakan Privasi</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Syarat & Ketentuan</a></li>
+          </ul>
+        </div>
+      </div>
+      <!-- Contact Info -->
+      <div class="border-t border-gray-800 mt-12 pt-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div class="flex items-center">
+            <span class="mr-3">📍</span>
+            <span class="text-gray-400">
+              Jl. Fashion No. 123, Jakarta 12345, Indonesia
+            </span>
+          </div>
+          <div class="flex items-center">
+            <span class="mr-3">📞</span>
+            <span class="text-gray-400">
+              +62 21 1234 5678
+            </span>
+          </div>
+        </div>
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <p class="text-gray-400 text-sm">
+            © 2025 minus one Fashion. Seluruh hak cipta dilindungi.
+          </p>
+          <div class="flex space-x-6 mt-4 md:mt-0">
+            <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Kebijakan Privasi</a>
+            <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Syarat & Ketentuan</a>
+            <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Kebijakan Cookie</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cart Popup -->
+  <div id="cart-popup" class="fixed top-20 right-4 bg-white border border-gray-300 rounded-lg shadow-lg w-80 max-w-full z-50 p-4 hidden">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-bold text-lg">Keranjang</h3>
+      <button id="close-cart" class="text-gray-500 hover:text-red-600 text-2xl">&times;</button>
+    </div>
+    <div id="cart-items" class="mb-4 text-gray-800">
+      <p class="text-sm text-gray-500">Keranjang kosong.</p>
+    </div>
+    <div id="cart-total" class="font-bold text-right text-lg text-red-600 mb-2"></div>
+    <div class="flex justify-between items-center mb-2">
+      <span></span>
+      <button id="cart-clear-btn" class="text-sm text-red-600 hover:underline">Hapus Semua</button>
+    </div>
+    <div class="flex justify-end">
+      <a href="checkout.html" class="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-800 text-center block">Checkout</a>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="cart-success-notif" class="hidden fixed top-6 right-6 bg-green-500 text-white px-4 py-2 rounded shadow-2xl z-50 flex items-center gap-2 text-base font-semibold" style="min-width:200px;">
+    <span class="text-2xl">✔️</span>
+    <span id="cart-success-msg"></span>
+  </div>
+
+  <script>
+    // Contoh: Menampilkan alert saat tombol Subscribe diklik
+    document.querySelectorAll('button').forEach(btn => {
+      if (btn.textContent.includes('Subscribe')) {
+        btn.addEventListener('click', function() {
+          alert('Terima kasih telah berlangganan!');
+        });
+      }
+    });
+
+    // Cart logic
+    let cart = JSON.parse(localStorage.getItem('cart_minusone') || '[]');
+    const cartCount = document.getElementById('cart-count');
+    const cartPopup = document.getElementById('cart-popup');
+    const cartBtn = document.getElementById('cart-btn');
+    const closeCartBtn = document.getElementById('close-cart');
+    const cartItemsDiv = document.getElementById('cart-items');
+
+    // Data stok produk (bisa diubah sesuai kebutuhan)
+    const productStock = {
+      'Gaun Malam Sutra Premium': 5,
+      'Blazer Bisnis Tailor': 3,
+      'Tas Tangan Kulit Mewah': 7,
+      'Sepatu Boots Kulit Italia': 4
+    };
+
+    // Suara notifikasi (ding/pop)
+    const notifAudio = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa1c82.mp3');
+    const popAudio = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b7b8b.mp3');
+
+    // Notifikasi sukses
+    function showSuccessNotif(msg) {
+      const notif = document.getElementById('cart-success-notif');
+      const notifMsg = document.getElementById('cart-success-msg');
+      notifMsg.textContent = msg;
+      notif.classList.remove('hidden');
+      notif.classList.add('toast-animate');
+      notifAudio.currentTime = 0; notifAudio.play();
+      setTimeout(() => {
+        notif.classList.add('hidden');
+        notif.classList.remove('toast-animate');
+      }, 2000);
+    }
+
+    // Tambah produk ke cart & animasi cart
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const title = this.getAttribute('data-title');
+        const price = this.getAttribute('data-price');
+        const stok = productStock[title] || 99;
+        // Jika produk sudah ada, cek stok sebelum tambah qty
+        const idx = cart.findIndex(item => item.title === title && item.price === price);
+        if (idx !== -1) {
+          if ((cart[idx].qty || 1) >= stok) {
+            showSuccessNotif('Stok barang habis!');
+            return;
+          }
+          cart[idx].qty = (cart[idx].qty || 1) + 1;
+        } else {
+          if (stok < 1) {
+            showSuccessNotif('Stok barang habis!');
+            return;
+          }
+          cart.push({ title, price, qty: 1 });
+        }
+        updateCartUI();
+        // Animasi cart di header
+        cartBtn.classList.add('animate-bounce');
+        setTimeout(() => {
+          cartBtn.classList.remove('animate-bounce');
+        }, 500);
+        // Animasi pada tombol masukan keranjang
+        this.classList.add('cart-animate');
+        setTimeout(() => {
+          this.classList.remove('cart-animate');
+        }, 400);
+        // Notifikasi sukses
+        showSuccessNotif('Produk berhasil dimasukkan ke keranjang!');
+        // Suara pop tambahan
+        try { popAudio.currentTime = 0; popAudio.play(); } catch(e){}
+      });
+    });
+
+    // Update tampilan cart count dan isi cart
+    function updateCartUI() {
+      cartCount.textContent = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+      if (cart.length === 0) {
+        cartItemsDiv.innerHTML = '<p class="text-sm text-gray-500">Keranjang kosong.</p>';
+        document.getElementById('cart-total').textContent = '';
+      } else {
+        cartItemsDiv.innerHTML = cart.map((item, idx) => {
+          const stok = productStock[item.title] || 99;
+          const qty = item.qty || 1;
+          const overStock = qty > stok;
+          return `
+            <div class='flex justify-between items-center mb-2'>
+              <span>${item.title}</span>
+              <div class='flex items-center gap-2'>
+                <input type='number' min='1' max='${stok}' value='${qty}' data-idx='${idx}' class='cart-qty-input w-12 border rounded text-center transition-transform duration-200' inputmode='numeric' pattern='[0-9]*' />
+                <span class='font-bold text-red-600 ml-2'>${item.price}</span>
+                <button class='cart-remove-btn text-xl text-gray-400 hover:text-red-600' data-idx='${idx}' title='Hapus'>&#128465;</button>
+              </div>
+            </div>
+            ${overStock ? `<div class='text-xs text-red-600 mb-2 ml-2'>Stok hanya ${stok} item!</div>` : ''}
+          `;
+        }).join('');
+        // Total harga otomatis
+        const total = cart.reduce((sum, item) => sum + (parseInt((item.price||'0').replace(/\D/g, '')) * (item.qty || 1)), 0);
+        document.getElementById('cart-total').textContent = 'Total: ' + total.toLocaleString('id-ID', {style:'currency', currency:'IDR'});
+      }
+      // Simpan cart ke localStorage agar bisa dibaca di halaman checkout
+      localStorage.setItem('cart_minusone', JSON.stringify(cart));
+      // Event hapus item
+      document.querySelectorAll('.cart-remove-btn').forEach(btn => {
+        btn.onclick = function() {
+          const idx = parseInt(this.getAttribute('data-idx'));
+          cart.splice(idx, 1);
+          updateCartUI();
+        };
+      });
+      // Event ubah qty
+      document.querySelectorAll('.cart-qty-input').forEach(input => {
+        input.onchange = function() {
+          const idx = parseInt(this.getAttribute('data-idx'));
+          let val = parseInt(this.value);
+          const stok = productStock[cart[idx].title] || 99;
+          if (val > stok) val = stok;
+          if (isNaN(val) || val < 1) val = 1;
+          cart[idx].qty = val;
+          // Animasi qty
+          this.classList.add('scale-110');
+          setTimeout(() => this.classList.remove('scale-110'), 200);
+          updateCartUI();
+        };
+      });
+      // Event hapus semua
+      const clearBtn = document.getElementById('cart-clear-btn');
+      if (clearBtn) {
+        clearBtn.onclick = function() {
+          if (confirm('Apakah Anda yakin ingin mengosongkan keranjang?')) {
+            cart = [];
+            updateCartUI();
+          }
+        };
+      }
+    }
+
+    // Tampilkan popup cart
+    cartBtn.addEventListener('click', function() {
+      cartPopup.classList.toggle('hidden');
+    });
+    // Tutup popup cart
+    closeCartBtn.addEventListener('click', function() {
+      cartPopup.classList.add('hidden');
+    });
+    // Tutup popup cart jika klik di luar
+    document.addEventListener('click', function(e) {
+      if (!cartPopup.contains(e.target) && !cartBtn.contains(e.target)) {
+        cartPopup.classList.add('hidden');
+      }
+    });
+    // Inisialisasi tampilan cart saat load
+    updateCartUI();
+
+    // Rating produk
+    function renderRatings() {
+      document.querySelectorAll('.rating').forEach(div => {
+        const title = div.getAttribute('data-title');
+        let ratings = JSON.parse(localStorage.getItem('ratings_minusone') || '{}');
+        let data = ratings[title] || { sum: 0, count: 0 };
+        let avg = data.count ? (data.sum / data.count) : 0;
+        div.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement('span');
+          star.textContent = '⭐';
+          star.style.cursor = 'pointer';
+          star.style.opacity = i <= Math.round(avg) ? '1' : '0.3';
+          star.onclick = function() {
+            data.sum += i;
+            data.count++;
+            ratings[title] = data;
+            localStorage.setItem('ratings_minusone', JSON.stringify(ratings));
+            renderRatings();
+          };
+          div.appendChild(star);
+        }
+        if (data.count) {
+          const info = document.createElement('span');
+          info.textContent = ` (${avg.toFixed(1)})`;
+          info.className = 'text-xs text-gray-500 ml-2';
+          div.appendChild(info);
+        }
+      });
+    }
+    renderRatings();
+
+    // Carousel New Arrival continuous infinite auto-slide + drag-to-scroll
+    const carousel = document.getElementById('na-carousel');
+    let autoScrollId = null;
+    let isPaused = false;
+    function getHalfScroll() {
+      return carousel.scrollWidth / 2;
+    }
+    function startAutoScroll() {
+      if (autoScrollId) cancelAnimationFrame(autoScrollId);
+      function step() {
+        if (!isPaused) {
+          carousel.scrollLeft += 1;
+          if (carousel.scrollLeft >= getHalfScroll()) {
+            carousel.scrollLeft = 0;
+          }
+        }
+        autoScrollId = requestAnimationFrame(step);
+      }
+      autoScrollId = requestAnimationFrame(step);
+    }
+    function stopAutoScroll() { isPaused = true; }
+    function resumeAutoScroll() { isPaused = false; }
+    carousel.addEventListener('mouseenter', stopAutoScroll);
+    carousel.addEventListener('mouseleave', resumeAutoScroll);
+    document.getElementById('na-prev').onclick = () => {
+      carousel.scrollBy({ left: -220, behavior: 'smooth' });
+    };
+    document.getElementById('na-next').onclick = () => {
+      carousel.scrollBy({ left: 220, behavior: 'smooth' });
+    };
+    // Drag-to-scroll (mouse & touch)
+    let isDown = false;
+    let startX, scrollLeft;
+    carousel.addEventListener('mousedown', (e) => {
+      isDown = true;
+      carousel.classList.add('cursor-grabbing');
+      startX = e.pageX - carousel.offsetLeft;
+      scrollLeft = carousel.scrollLeft;
+      stopAutoScroll();
+    });
+    carousel.addEventListener('mouseleave', () => {
+      isDown = false;
+      carousel.classList.remove('cursor-grabbing');
+      resumeAutoScroll();
+    });
+    carousel.addEventListener('mouseup', () => {
+      isDown = false;
+      carousel.classList.remove('cursor-grabbing');
+      resumeAutoScroll();
+    });
+    carousel.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - carousel.offsetLeft;
+      const walk = (x - startX) * 1.2;
+      carousel.scrollLeft = scrollLeft - walk;
+    });
+    // Touch support
+    let touchStartX = 0, touchScrollLeft = 0;
+    carousel.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].pageX;
+      touchScrollLeft = carousel.scrollLeft;
+      stopAutoScroll();
+    });
+    carousel.addEventListener('touchend', () => {
+      resumeAutoScroll();
+    });
+    carousel.addEventListener('touchmove', (e) => {
+      const x = e.touches[0].pageX;
+      const walk = (x - touchStartX) * 1.2;
+      carousel.scrollLeft = touchScrollLeft - walk;
+    });
+    // Inisialisasi
+    startAutoScroll();
+
+    // Harga dan diskon acak untuk produk grid utama
+    const produkList = [
+      {
+        selector: '.produk-gaun',
+        min: 120000, max: 300000, nama: 'Gaun Malam Sutra Premium',
+      },
+      {
+        selector: '.produk-blazer',
+        min: 120000, max: 300000, nama: 'Blazer Bisnis Tailor',
+      },
+      {
+        selector: '.produk-tas',
+        min: 120000, max: 300000, nama: 'Tas Tangan Kulit Mewah',
+      },
+      {
+        selector: '.produk-sepatu',
+        min: 120000, max: 300000, nama: 'Sepatu Boots Kulit Italia',
+      },
+    ];
+    produkList.forEach((p, i) => {
+      const el = document.querySelector(p.selector);
+      if (!el) return;
+      // Acak diskon 50-70% dengan angka tidak bulat
+      const diskon = Math.floor(Math.random()*21)+50 + Math.floor(Math.random()*10)/10; // 50.0 - 70.9
+      // Harga lama acak (misal: 2x-3x harga diskon)
+      const hargaDiskon = Math.floor(Math.random()*(p.max-p.min+1))+p.min;
+      const hargaLama = Math.floor(hargaDiskon/(1-diskon/100));
+      // Update harga di DOM
+      const hargaDiskonEl = el.querySelector('.harga-diskon');
+      const hargaLamaEl = el.querySelector('.harga-lama');
+      if (hargaDiskonEl) hargaDiskonEl.textContent = 'Rp'+hargaDiskon.toLocaleString('id-ID');
+      if (hargaLamaEl) hargaLamaEl.textContent = 'Rp'+hargaLama.toLocaleString('id-ID');
+      // Badge diskon
+      let badge = el.querySelector('.badge-diskon');
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.className = 'badge-diskon absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow';
+        el.querySelector('img').parentNode.style.position = 'relative';
+        el.querySelector('img').parentNode.appendChild(badge);
+      }
+      badge.textContent = 'Diskon ' + diskon.toFixed(1).replace('.',',') + '%';
+    });
+  </script>
+  </body>
+</html>
